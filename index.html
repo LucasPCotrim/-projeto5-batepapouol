@@ -9,12 +9,16 @@
     <title>Chat UOL</title>
 </head>
 <body>
+
+    
     <div class="entry_screen hidden">
         <img src="imgs/logo.png" alt="UOL Logo">
         <input type="text" id="message" name="message" placeholder="Digite seu nome">
         <button>Entrar</button>
     </div>
-    <div class="loading_screen">
+
+
+    <div class="loading_screen hidden">
         <img src="imgs/logo.png" alt="UOL Logo">
         <div class="loader">
             <span style="--i:1;"></span>
@@ -30,6 +34,8 @@
         </div>
         <div class="status">Entrando...</div>
     </div>
+
+
     <div class="page_content">
         <div class="top_menu">
             <img src="imgs/logo.png" alt="UOL Logo">
@@ -54,12 +60,41 @@
             </div>
             <div class="message status">
                 <span class="time">(09:21:45)</span>
-                <span class="message_content"><span class="username">Maria</span> sai na sala...</span>
+                <span class="message_content"><span class="username">Maria</span> saiu na sala...</span>
             </div>
         </div>
         <div class="bottom_menu">
             <input type="text" id="message" name="message" placeholder="Escreva Aqui...">
             <ion-icon name="paper-plane"></ion-icon>
+        </div>
+
+        <div class="side_menu">
+            <div class="section_title">Escolha um contato para enviar mensagem:</div>
+            <div class="user_menu">
+                <div class="option">
+                    <ion-icon name="people"></ion-icon>
+                    Todos
+                </div>
+                <div class="option">
+                    <ion-icon name="person-circle"></ion-icon>
+                    João
+                </div>
+                <div class="option">
+                    <ion-icon name="person-circle"></ion-icon>
+                    Maria
+                </div>
+            </div>
+            <div class="section_title">Escolha a visibilidade:</div>
+            <div class="visibility_menu">
+                <div class="option">
+                    <ion-icon name="lock-open"></ion-icon>
+                    Público
+                </div>
+                <div class="option">
+                    <ion-icon name="lock-closed"></ion-icon>
+                    Reservadamente
+                </div>
+            </div>
         </div>
     </div>
 
