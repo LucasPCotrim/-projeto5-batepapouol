@@ -10,6 +10,7 @@ const messages_url = 'https://mock-api.driven.com.br/api/v6/uol/messages/';
 const visibility_options = ['Público', 'Reservadamente'];
 const user_options = ['Todos', 'João', 'Maria'];
 let ping_time_interval;
+let refresh_chat_time_interval;
 
 
 let DOM_entry_screen = document.querySelector('.entry_screen');
@@ -32,6 +33,7 @@ function SERVER_process_username_answer(answer) {
         username = typed_username;
         start_ping_server_interval();
         fetch_messages_from_server();
+        start_chat_refresh_interval();
         DOM_entry_screen.classList.toggle('hidden');
         DOM_loading_screen.classList.toggle('hidden');
         setTimeout(function(){ DOM_loading_screen.classList.toggle('hidden');
@@ -85,7 +87,7 @@ function start_ping_server_interval(){
                                               name: username,
                                             }
                                         });
-                                        console.log('ping')
+                                        console.log('ping');
                                      }, 5000);
 }
 
@@ -128,16 +130,18 @@ function change_user(i){
 function scroll_last_message_into_view(){
     const messages = DOM_message_container.querySelectorAll('.message');
     const last_message = messages[messages.length - 1];
-    
+    last_message.scrollIntoView();
     // scrollIntoView() not working without the Timeout
-    setTimeout(function(){
-        last_message.scrollIntoView();
-    }, 2000);
+    // setTimeout(function(){
+    //     last_message.scrollIntoView();
+    // }, 2000);
 }
 
 
 function fill_chat(){
+    console.log('fill_chat()');
     let message_div;
+    DOM_message_container.innerHTML = '';
     for (let i = 0; i < messages_array.length; i++) {
         const message_type = messages_array[i].type;
         const message_time = messages_array[i].time;
@@ -180,7 +184,6 @@ function fill_chat(){
 
 
 function SERVER_process_fetch_messages_answer(answer) {
-    console.log(answer);
     messages_array = answer.data;
     fill_chat();
 }
@@ -188,6 +191,16 @@ function fetch_messages_from_server(){
     const SERVER_fetch_messages_promise = axios.get(messages_url);
     console.log('SERVER_fetch_messages_promise', SERVER_fetch_messages_promise);
     SERVER_fetch_messages_promise.then(SERVER_process_fetch_messages_answer);
+}
+
+
+
+
+function start_chat_refresh_interval(){
+    refresh_chat_time_interval = setInterval(function () {
+                                    fetch_messages_from_server();
+                                    console.log('refresh_chat');
+                                }, 3000);
 }
 
 
