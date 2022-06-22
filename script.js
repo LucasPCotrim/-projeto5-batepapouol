@@ -157,6 +157,7 @@ function fill_chat(){
         const message_from = messages_array[i].from;
         const message_text = messages_array[i].text;
         const message_to = messages_array[i].to;
+        
         if (message_type == 'status'){
             message_div = `
                         <div class="message status">
@@ -175,16 +176,20 @@ function fill_chat(){
                          `;
             DOM_message_container.innerHTML += message_div;
         }
-        else if (message_type == 'private_message' && (username == message_to || username == message_from)){
-            message_div = `
+        else if (message_type == 'private_message'){
+            if (username == message_to || username == message_from){
+                message_div = `
                         <div class="message private">
                             <span class="time">(${message_time})</span>
                             <span class="message_content"><span class="username">${message_from}</span> reservadamente para <span class="username">${message_to}:</span> ${message_text}</span>
                         </div>
                          `;
-            DOM_message_container.innerHTML += message_div;
+                DOM_message_container.innerHTML += message_div;
+            }
         }
         else{
+            console.log('message_type');
+            console.log(message_type);
             throw new Error('Invalid message type!');
         }
     }
