@@ -41,7 +41,7 @@
     <div class="page_content hidden">
         <div class="top_menu">
             <img src="imgs/logo.png" alt="UOL Logo">
-            <ion-icon name="people"></ion-icon>
+            <ion-icon onclick="move_side_menu('show')" name="people"></ion-icon>
         </div>
         <div class="message_container">
             <div class="message status">
@@ -70,34 +70,47 @@
             <ion-icon name="paper-plane"></ion-icon>
         </div>
 
-        <div class="side_menu hidden">
+        <div class="side_menu">
             <div class="section_title">Escolha um contato para enviar mensagem:</div>
             <div class="user_menu">
-                <div class="option">
+                <div class="option" data-identifier="participant">
                     <ion-icon name="people"></ion-icon>
-                    Todos
+                    <div class="option_content">
+                        Todos
+                        <ion-icon name="checkmark-sharp"></ion-icon>
+                    </div>
                 </div>
-                <div class="option">
+                <div class="option" data-identifier="participant">
                     <ion-icon name="person-circle"></ion-icon>
-                    João
+                    <div class="option_content">
+                        João
+                    </div>
                 </div>
-                <div class="option">
+                <div class="option" data-identifier="participant">
                     <ion-icon name="person-circle"></ion-icon>
-                    Maria
+                    <div class="option_content">
+                        Maria
+                    </div>
                 </div>
             </div>
             <div class="section_title">Escolha a visibilidade:</div>
             <div class="visibility_menu">
-                <div class="option">
+                <div class="option" onclick="change_visibility(0)" data-identifier="visibility">
                     <ion-icon name="lock-open"></ion-icon>
-                    Público
+                    <div class="option_content">
+                        <p>Público</p>
+                        <ion-icon name="checkmark-sharp"></ion-icon>
+                    </div>
                 </div>
-                <div class="option">
+                <div class="option" onclick="change_visibility(1)" data-identifier="visibility">
                     <ion-icon name="lock-closed"></ion-icon>
-                    Reservadamente
+                    <div class="option_content">
+                        <p>Reservadamente</p>
+                    </div>
                 </div>
             </div>
         </div>
+        <div onclick="move_side_menu('hide')" class="shaded_screen hidden"></div>
     </div>
     
 

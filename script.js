@@ -1,22 +1,28 @@
 // -------------------------------- Global Variables --------------------------------
 let username;
 let typed_username;
+let visibility_mode;
 const participants_url = 'https://mock-api.driven.com.br/api/v6/uol/participants ';
 const status_url = 'https://mock-api.driven.com.br/api/v6/uol/status';
+const visibility_options = ['Público', 'Reservadamente'];
 let ping_time_interval;
+
 
 let DOM_entry_screen = document.querySelector('.entry_screen');
 let DOM_username_input = document.querySelector('.entry_screen input');
 let DOM_invalid_user_name_popup = document.querySelector('.invalid_username_popup');
 let DOM_loading_screen = document.querySelector('.loading_screen');
 let DOM_page_content = document.querySelector('.page_content');
+let DOM_top_menu = document.querySelector('.top_menu');
+let DOM_message_container = document.querySelector('.message_container');
+let DOM_side_menu = document.querySelector('.side_menu');
+let DOM_shaded_screen = document.querySelector('.shaded_screen');
 
 
 // -------------------------------- Functions --------------------------------
 function SERVER_process_username_answer(answer) {
 
     if(answer.status == 200){
-        console.log('status == 200');
         username = typed_username;
         start_ping_server_interval();
         DOM_entry_screen.classList.toggle('hidden');
@@ -25,14 +31,11 @@ function SERVER_process_username_answer(answer) {
                                DOM_page_content.classList.toggle('hidden');}, 2000);
     }
     else{
-        console.log('status != 200');
         return;
     }
 }
 function SERVER_process_username_error(error){
     if (error.response.status == 400){
-        console.log('status == 400');
-        console.log('This Username is already taken');
         DOM_invalid_user_name_popup.style.opacity = 0.6;
         DOM_invalid_user_name_popup.innerHTML = "Nome já está em uso! Digite outro";
         setTimeout(function(){ DOM_invalid_user_name_popup.style.opacity = 0;
@@ -44,7 +47,6 @@ function log_in(){
     DOM_username_input.value = '';
     
     if (typed_username.trim().length === 0 || !String(typed_username)){
-        console.log('Please insert a valid name');
         DOM_invalid_user_name_popup.style.opacity = 0.6;
         DOM_invalid_user_name_popup.innerHTML = "Insira um nome de usuário válido"
         setTimeout(function(){ DOM_invalid_user_name_popup.style.opacity = 0;
@@ -81,10 +83,27 @@ function start_ping_server_interval(){
 }
 
 
+function move_side_menu(mode) {
+    if (mode == 'show'){
+        DOM_side_menu.style.right = 0;
+    }
+    else if (mode == 'hide'){
+        DOM_side_menu.style.right = "-259px";
+        
+    }
+    DOM_shaded_screen.classList.toggle('hidden');
+}
 
 
-
-
+function change_visibility(i) {
+    let DOM_visibility_menu = document.querySelector('.visibility_menu');
+    let DOM_visibility_options = DOM_visibility_menu.querySelectorAll('.option');
+    for (let j = 0; j < DOM_visibility_options.length; j++) {
+        DOM_visibility_options[j].querySelector('.option_content').innerHTML = `<p>${visibility_options[j]}</p>`;
+    }
+    DOM_visibility_options[i].querySelector('.option_content').innerHTML += `<ion-icon name="checkmark-sharp"></ion-icon>`;
+    visibility_mode = visibility_options[i];
+}
 
 
 // -------------------------------- Main --------------------------------
