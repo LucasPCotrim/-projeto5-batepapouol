@@ -2,9 +2,13 @@
 let username;
 let typed_username;
 let visibility_mode;
+let recipient_user;
+let messages_array;
 const participants_url = 'https://mock-api.driven.com.br/api/v6/uol/participants ';
 const status_url = 'https://mock-api.driven.com.br/api/v6/uol/status';
+const messages_url = 'http://mock-api.driven.com.br/api/v6/uol/messages/';
 const visibility_options = ['Público', 'Reservadamente'];
+const user_options = ['Todos', 'João', 'Maria'];
 let ping_time_interval;
 
 
@@ -17,6 +21,8 @@ let DOM_top_menu = document.querySelector('.top_menu');
 let DOM_message_container = document.querySelector('.message_container');
 let DOM_side_menu = document.querySelector('.side_menu');
 let DOM_shaded_screen = document.querySelector('.shaded_screen');
+let DOM_visibility_menu = document.querySelector('.visibility_menu');
+let DOM_user_menu = document.querySelector('.user_menu');
 
 
 // -------------------------------- Functions --------------------------------
@@ -25,6 +31,7 @@ function SERVER_process_username_answer(answer) {
     if(answer.status == 200){
         username = typed_username;
         start_ping_server_interval();
+        fetch_messages_from_server();
         DOM_entry_screen.classList.toggle('hidden');
         DOM_loading_screen.classList.toggle('hidden');
         setTimeout(function(){ DOM_loading_screen.classList.toggle('hidden');
@@ -96,13 +103,49 @@ function move_side_menu(mode) {
 
 
 function change_visibility(i) {
-    let DOM_visibility_menu = document.querySelector('.visibility_menu');
-    let DOM_visibility_options = DOM_visibility_menu.querySelectorAll('.option');
+    const DOM_visibility_options = DOM_visibility_menu.querySelectorAll('.option');
     for (let j = 0; j < DOM_visibility_options.length; j++) {
         DOM_visibility_options[j].querySelector('.option_content').innerHTML = `<p>${visibility_options[j]}</p>`;
     }
     DOM_visibility_options[i].querySelector('.option_content').innerHTML += `<ion-icon name="checkmark-sharp"></ion-icon>`;
     visibility_mode = visibility_options[i];
+}
+
+
+function change_user(i){
+    const DOM_user_options = DOM_user_menu.querySelectorAll('.option');
+    for (let j = 0; j < DOM_user_options.length; j++) {
+        DOM_user_options[j].querySelector('.option_content').innerHTML = `<p>${user_options[j]}</p>`;
+    }
+    DOM_user_options[i].querySelector('.option_content').innerHTML += `<ion-icon name="checkmark-sharp"></ion-icon>`;
+    recipient_user = user_options[i];
+}
+
+
+
+
+
+
+
+
+
+function SERVER_process_fetch_messages_answer(answer) {
+    console.log(answer);
+    //messages_array = answer.data;
+}
+function fetch_messages_from_server(){
+    const SERVER_fetch_messages_promise = axios({
+                                            method: 'get',
+                                            url: messages_url,
+                                            headers: {                  
+                                                "Access-Control-Allow-Origin": "*",
+                                                "Access-Control-Allow-Headers": "Authorization", 
+                                                "Access-Control-Allow-Methods": "GET, POST, OPTIONS, PUT, PATCH, DELETE" ,
+                                                "Content-Type": "application/json;charset=UTF-8"                   
+                                            }
+                                          })
+    console.log('SERVER_fetch_messages_promise', SERVER_fetch_messages_promise);
+    SERVER_fetch_messages_promise.then(SERVER_process_fetch_messages_answer);
 }
 
 
