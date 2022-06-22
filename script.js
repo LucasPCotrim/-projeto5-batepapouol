@@ -6,7 +6,7 @@ let recipient_user;
 let messages_array;
 const participants_url = 'https://mock-api.driven.com.br/api/v6/uol/participants ';
 const status_url = 'https://mock-api.driven.com.br/api/v6/uol/status';
-const messages_url = 'http://mock-api.driven.com.br/api/v6/uol/messages/';
+const messages_url = 'https://mock-api.driven.com.br/api/v6/uol/messages/';
 const visibility_options = ['Público', 'Reservadamente'];
 const user_options = ['Todos', 'João', 'Maria'];
 let ping_time_interval;
@@ -82,7 +82,7 @@ function start_ping_server_interval(){
                                             method: 'post',
                                             url: status_url,
                                             data: {
-                                            name: username,
+                                              name: username,
                                             }
                                         });
                                         console.log('ping')
@@ -135,15 +135,15 @@ function SERVER_process_fetch_messages_answer(answer) {
 }
 function fetch_messages_from_server(){
     const SERVER_fetch_messages_promise = axios({
-                                            method: 'get',
-                                            url: messages_url,
-                                            headers: {                  
-                                                "Access-Control-Allow-Origin": "*",
-                                                "Access-Control-Allow-Headers": "Authorization", 
-                                                "Access-Control-Allow-Methods": "GET, POST, OPTIONS, PUT, PATCH, DELETE" ,
-                                                "Content-Type": "application/json;charset=UTF-8"                   
-                                            }
-                                          })
+                                method: 'get',
+                                url: messages_url,
+                                headers: {                  
+                                    "Access-Control-Allow-Origin": "*",
+                                    "Access-Control-Allow-Headers": "Authorization", 
+                                    "Access-Control-Allow-Methods": "GET, POST, OPTIONS, PUT, PATCH, DELETE" ,
+                                    "Content-Type": "application/json;charset=UTF-8"                   
+                                }
+                                })
     console.log('SERVER_fetch_messages_promise', SERVER_fetch_messages_promise);
     SERVER_fetch_messages_promise.then(SERVER_process_fetch_messages_answer);
 }
