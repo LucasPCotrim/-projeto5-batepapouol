@@ -124,8 +124,11 @@ function change_user(i){
     for (let j = 0; j < DOM_user_options.length; j++) {
         DOM_user_options[j].querySelector('.option_content').innerHTML = `<p>${participants_array[j]}</p>`;
     }
-    DOM_user_options[i].querySelector('.option_content').innerHTML += `<ion-icon name="checkmark-sharp"></ion-icon>`;
-    recipient_user_index = i;
+
+    if (participants_array[i] != username){
+        DOM_user_options[i].querySelector('.option_content').innerHTML += `<ion-icon name="checkmark-sharp"></ion-icon>`;
+        recipient_user_index = i;
+    }
     console.log('recipient_user = ', participants_array[recipient_user_index]);
 }
 
