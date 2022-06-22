@@ -175,7 +175,7 @@ function fill_chat(){
                          `;
             DOM_message_container.innerHTML += message_div;
         }
-        else if (message_type == 'private_message'){
+        else if (message_type == 'private_message' && (username == message_to || username == message_from)){
             message_div = `
                         <div class="message private">
                             <span class="time">(${message_time})</span>
