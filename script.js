@@ -24,6 +24,8 @@ let DOM_side_menu = document.querySelector('.side_menu');
 let DOM_shaded_screen = document.querySelector('.shaded_screen');
 let DOM_visibility_menu = document.querySelector('.visibility_menu');
 let DOM_user_menu = document.querySelector('.user_menu');
+let DOM_bottom_menu = document.querySelector('.bottom_menu');
+let DOM_message_input = document.querySelector('.bottom_menu input');
 
 
 // -------------------------------- Functions --------------------------------
@@ -201,6 +203,47 @@ function start_chat_refresh_interval(){
                                     fetch_messages_from_server();
                                     console.log('refresh_chat');
                                 }, 3000);
+}
+
+
+
+
+
+
+
+
+function SERVER_process_message_sent_answer(answer){
+    if(answer.status == 200){
+        console.log('Message Sent successfully!')
+        fetch_messages_from_server();
+    }
+    else{
+        return;
+    }
+}
+function SERVER_process_message_sent_error(error){
+    console.log('Error: Message was not sent successfully')
+    console.log(error);
+    window.location.reload();
+}
+function send_message(){
+    const message_content = DOM_message_input.value;
+    DOM_message_input.value = '';
+    console.log('message_content = ', message_content);
+    if(typed_username.trim().length != 0 && String(typed_username)){
+        const SERVER_message_sent_promise = axios({
+                                                method: 'post',
+                                                url: messages_url,
+                                                data: {
+                                                    from: username,
+                                                    to: "Todos",
+                                                    text: message_content,
+                                                    type: "message"
+                                                }
+                                            });
+        SERVER_message_sent_promise.then(SERVER_process_message_sent_answer)
+        .catch(SERVER_process_message_sent_error);
+    }
 }
 
 
