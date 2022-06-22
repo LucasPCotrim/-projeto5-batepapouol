@@ -345,9 +345,7 @@
     color: #000000;
     cursor: pointer;
 }
-.option:hover {
-    background-color: #E7E7E7;
-}
+
 .option .option_content {
     display: flex;
     flex-direction: row;

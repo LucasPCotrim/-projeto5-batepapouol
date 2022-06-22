@@ -2,15 +2,16 @@
 let username;
 let typed_username;
 let visibility_mode = 'Público';
-let recipient_user = 'Todos';
+let recipient_user_index = 0;
 let messages_array;
+let participants_array = ['Todos'];
 const participants_url = 'https://mock-api.driven.com.br/api/v6/uol/participants ';
 const status_url = 'https://mock-api.driven.com.br/api/v6/uol/status';
 const messages_url = 'https://mock-api.driven.com.br/api/v6/uol/messages/';
 const visibility_options = ['Público', 'Reservadamente'];
-const user_options = ['Todos', 'João', 'Maria'];
 let ping_time_interval;
 let refresh_chat_time_interval;
+let refresh_participants_time_interval;
 
 
 let DOM_entry_screen = document.querySelector('.entry_screen');
@@ -35,7 +36,9 @@ function SERVER_process_username_answer(answer) {
         username = typed_username;
         start_ping_server_interval();
         fetch_messages_from_server();
+        fetch_participants_from_server();
         start_chat_refresh_interval();
+        start_participants_refresh_interval();
         DOM_entry_screen.classList.toggle('hidden');
         DOM_loading_screen.classList.toggle('hidden');
         setTimeout(function(){ DOM_loading_screen.classList.toggle('hidden');
@@ -119,11 +122,11 @@ function change_visibility(i) {
 function change_user(i){
     const DOM_user_options = DOM_user_menu.querySelectorAll('.option');
     for (let j = 0; j < DOM_user_options.length; j++) {
-        DOM_user_options[j].querySelector('.option_content').innerHTML = `<p>${user_options[j]}</p>`;
+        DOM_user_options[j].querySelector('.option_content').innerHTML = `<p>${participants_array[j]}</p>`;
     }
     DOM_user_options[i].querySelector('.option_content').innerHTML += `<ion-icon name="checkmark-sharp"></ion-icon>`;
-    recipient_user = user_options[i];
-    console.log('recipient_user = ', recipient_user);
+    recipient_user_index = i;
+    console.log('recipient_user = ', participants_array[recipient_user_index]);
 }
 
 
@@ -234,7 +237,7 @@ function send_message(){
     DOM_message_input.value = '';
 
     if(typed_username.trim().length != 0 && String(typed_username)){
-        message_to = recipient_user;
+        message_to = participants_array[recipient_user_index];
         if (visibility_mode=='Público'){
             message_type = 'message'
         }
@@ -252,8 +255,56 @@ function send_message(){
                                                 }
                                             });
         SERVER_message_sent_promise.then(SERVER_process_message_sent_answer)
-        .catch(SERVER_process_message_sent_error);
+                                   .catch(SERVER_process_message_sent_error);
     }
+}
+
+
+
+
+function SERVER_process_fetch_participants_answer(answer){
+    console.log('answer = ', answer);
+    const data = answer.data;
+    participants_array = ['Todos'];
+    for (let i = 0; i < data.length; i++) {
+        participants_array.push(data[i].name);
+    }
+    console.log('participants_array = ', participants_array);
+    fill_side_menu_with_participants();
+}
+function fetch_participants_from_server(){
+    const SERVER_fetch_participants_promise = axios.get(participants_url);
+    SERVER_fetch_participants_promise.then(SERVER_process_fetch_participants_answer)
+                                     .catch(function (error){
+                                        console.log(error);
+                                        console.log('Could not get participants from server!');
+                                        throw new Error('Could not get participants from server!');
+                                     });
+}
+
+function start_participants_refresh_interval(){
+    refresh_participants_time_interval = setInterval(function () {
+                                                        fetch_participants_from_server();
+                                                        console.log('refresh_participants');
+                                                        console.log(participants_array);
+                                                    }, 10000);
+}
+
+
+
+function fill_side_menu_with_participants(){
+    DOM_user_menu.innerHTML = '';
+    for (let i = 0; i < participants_array.length; i++) {
+        const participant_div = `<div class="option" onclick="change_user(${i})" data-identifier="participant">
+                                    <ion-icon name="person-circle"></ion-icon>
+                                    <div class="option_content">
+                                        ${participants_array[i]}
+                                    </div>
+                                </div>`;
+        DOM_user_menu.innerHTML += participant_div;
+    }
+    const DOM_user_options = DOM_user_menu.querySelectorAll('.option');
+    DOM_user_options[recipient_user_index].querySelector('.option_content').innerHTML += `<ion-icon name="checkmark-sharp"></ion-icon>`;
 }
 
 
