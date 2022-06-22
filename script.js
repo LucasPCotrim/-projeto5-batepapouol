@@ -125,6 +125,16 @@ function change_user(i){
 
 
 
+function scroll_last_message_into_view(){
+    const messages = DOM_message_container.querySelectorAll('.message');
+    const last_message = messages[messages.length - 1];
+    
+    // scrollIntoView() not working without the Timeout
+    setTimeout(function(){
+        last_message.scrollIntoView();
+    }, 2000);
+}
+
 
 function fill_chat(){
     let message_div;
@@ -164,9 +174,8 @@ function fill_chat(){
         else{
             throw new Error('Invalid message type!');
         }
-        
-        
     }
+    scroll_last_message_into_view();
 }
 
 

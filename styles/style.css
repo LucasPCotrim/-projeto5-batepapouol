@@ -203,6 +203,7 @@
     margin-bottom: 80px;
     padding-top: 26px;
     height: calc(100vh-2*80px);
+    overflow: auto;
 }
 .message {
     margin-bottom: 4px;
