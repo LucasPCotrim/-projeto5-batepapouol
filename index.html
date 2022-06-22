@@ -11,11 +11,13 @@
 <body>
 
     
-    <div class="entry_screen hidden">
+    <div class="entry_screen">
         <img src="imgs/logo.png" alt="UOL Logo">
-        <input type="text" id="message" name="message" placeholder="Digite seu nome">
-        <button>Entrar</button>
+        <input type="text" id="user_name" name="user_name" placeholder="Digite seu nome">
+        <button onclick="log_in()">Entrar</button>
+        <div class="invalid_username_popup"></div>
     </div>
+    
 
 
     <div class="loading_screen hidden">
@@ -36,7 +38,7 @@
     </div>
 
 
-    <div class="page_content">
+    <div class="page_content hidden">
         <div class="top_menu">
             <img src="imgs/logo.png" alt="UOL Logo">
             <ion-icon name="people"></ion-icon>
@@ -68,7 +70,7 @@
             <ion-icon name="paper-plane"></ion-icon>
         </div>
 
-        <div class="side_menu">
+        <div class="side_menu hidden">
             <div class="section_title">Escolha um contato para enviar mensagem:</div>
             <div class="user_menu">
                 <div class="option">
@@ -97,10 +99,12 @@
             </div>
         </div>
     </div>
+    
 
 
     <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

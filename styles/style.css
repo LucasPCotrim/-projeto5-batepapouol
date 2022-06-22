@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
+
 .entry_screen, .loading_screen {
     background-color: #FFFFFF;
     position: fixed;
@@ -75,6 +76,36 @@
     background-color: #c7c7c7;
     transform: scale(0.95);
 }
+.entry_screen > .invalid_username_popup{
+    position: absolute; 
+    left: 0; 
+    right: 0;
+    margin-left: auto; 
+    margin-right: auto;
+    padding: 10px; 
+    top: 427px;
+    width: 150px;
+    height: 50px;
+    background-color: red;
+    opacity: 0;
+    border-radius: 15px;
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    color: black;
+    transition: all 1s;
+    z-index: 4;
+}
+
+
+
+
 .loading_screen {
     z-index: 1;
 }
@@ -281,6 +312,7 @@
     line-height: 19px;
     display: flex;
     align-items: center;
+    justify-content: center;
     text-align: center;
     color: #000000;
     padding-top: 30px;
