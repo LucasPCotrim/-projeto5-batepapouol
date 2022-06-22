@@ -126,24 +126,57 @@ function change_user(i){
 
 
 
-
+function fill_chat(){
+    let message_div;
+    for (let i = 0; i < messages_array.length; i++) {
+        const message_type = messages_array[i].type;
+        const message_time = messages_array[i].time;
+        const message_from = messages_array[i].from;
+        const message_text = messages_array[i].text;
+        const message_to = messages_array[i].to;
+        if (message_type == 'status'){
+            message_div = `
+                        <div class="message status">
+                            <span class="time">(${message_time})</span>
+                            <span class="message_content"><span class="username">${message_from}</span> ${message_text}</span>
+                        </div>
+                         `;
+            DOM_message_container.innerHTML += message_div;
+        }
+        else if (message_type == 'message'){
+            message_div = `
+                        <div class="message regular">
+                            <span class="time">(${message_time})</span>
+                            <span class="message_content"><span class="username">${message_from}</span> para <span class="username">${message_to}:</span> ${message_text}</span>
+                        </div>
+                         `;
+            DOM_message_container.innerHTML += message_div;
+        }
+        else if (message_type == 'private_message'){
+            message_div = `
+                        <div class="message private">
+                            <span class="time">(${message_time})</span>
+                            <span class="message_content"><span class="username">${message_from}</span> reservadamente para <span class="username">${message_to}:</span> ${message_text}</span>
+                        </div>
+                         `;
+            DOM_message_container.innerHTML += message_div;
+        }
+        else{
+            throw new Error('Invalid message type!');
+        }
+        
+        
+    }
+}
 
 
 function SERVER_process_fetch_messages_answer(answer) {
     console.log(answer);
-    //messages_array = answer.data;
+    messages_array = answer.data;
+    fill_chat();
 }
 function fetch_messages_from_server(){
-    const SERVER_fetch_messages_promise = axios({
-                                method: 'get',
-                                url: messages_url,
-                                headers: {                  
-                                    "Access-Control-Allow-Origin": "*",
-                                    "Access-Control-Allow-Headers": "Authorization", 
-                                    "Access-Control-Allow-Methods": "GET, POST, OPTIONS, PUT, PATCH, DELETE" ,
-                                    "Content-Type": "application/json;charset=UTF-8"                   
-                                }
-                                })
+    const SERVER_fetch_messages_promise = axios.get(messages_url);
     console.log('SERVER_fetch_messages_promise', SERVER_fetch_messages_promise);
     SERVER_fetch_messages_promise.then(SERVER_process_fetch_messages_answer);
 }
