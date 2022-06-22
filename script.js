@@ -1,8 +1,8 @@
 // -------------------------------- Global Variables --------------------------------
 let username;
 let typed_username;
-let visibility_mode;
-let recipient_user;
+let visibility_mode = 'Público';
+let recipient_user = 'Todos';
 let messages_array;
 const participants_url = 'https://mock-api.driven.com.br/api/v6/uol/participants ';
 const status_url = 'https://mock-api.driven.com.br/api/v6/uol/status';
@@ -123,6 +123,7 @@ function change_user(i){
     }
     DOM_user_options[i].querySelector('.option_content').innerHTML += `<ion-icon name="checkmark-sharp"></ion-icon>`;
     recipient_user = user_options[i];
+    console.log('recipient_user = ', recipient_user);
 }
 
 
@@ -228,17 +229,26 @@ function SERVER_process_message_sent_error(error){
 }
 function send_message(){
     const message_content = DOM_message_input.value;
+    let message_to;
+    let message_type;
     DOM_message_input.value = '';
-    console.log('message_content = ', message_content);
+
     if(typed_username.trim().length != 0 && String(typed_username)){
+        message_to = recipient_user;
+        if (visibility_mode=='Público'){
+            message_type = 'message'
+        }
+        else{
+            message_type = 'private_message';
+        }
         const SERVER_message_sent_promise = axios({
                                                 method: 'post',
                                                 url: messages_url,
                                                 data: {
                                                     from: username,
-                                                    to: "Todos",
+                                                    to: message_to,
                                                     text: message_content,
-                                                    type: "message"
+                                                    type: message_type
                                                 }
                                             });
         SERVER_message_sent_promise.then(SERVER_process_message_sent_answer)
