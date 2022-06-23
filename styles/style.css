@@ -201,6 +201,7 @@
 
 /* START message_container */
 .message_container {
+    width: 100%;
     background-color: #F3F3F3;
     margin-top: 80px;
     margin-bottom: 80px;
@@ -211,6 +212,7 @@
 .message {
     margin-bottom: 4px;
     min-height: 40px;
+    width: 100%;
     display: flex;
     align-items: center;
     font-family: 'Roboto';
@@ -218,6 +220,8 @@
     font-weight: 400;
     font-size: 14px;
     color: black;
+    word-break: break-all;
+    overflow-y: auto;
 }
 .status {
     background-color: #DCDCDC;
@@ -269,6 +273,7 @@
 }
 .bottom_menu > textarea {
     height: 30px;
+    width: 100%;
     margin-left: 17px;
     border: none;
     outline: none;
