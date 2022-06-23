@@ -76,8 +76,8 @@
     background-color: #c7c7c7;
     transform: scale(0.95);
 }
-.entry_screen > .invalid_username_popup{
-    position: absolute; 
+.entry_screen > .invalid_username_popup, .page_content > .invalid_message_popup{
+    position: fixed; 
     left: 0; 
     right: 0;
     margin-left: auto; 
@@ -89,6 +89,7 @@
     background-color: red;
     opacity: 0;
     border-radius: 15px;
+    box-shadow: 0px 0px 20px 4px rgba(255,0,0,0.8);
     font-family: 'Roboto';
     font-style: normal;
     font-weight: 400;
@@ -99,8 +100,8 @@
     text-align: center;
     justify-content: center;
     color: black;
-    transition: all 1s linear;
-    z-index: 3;
+    transition: all 0.5s linear;
+    z-index: 5;
 }
 
 

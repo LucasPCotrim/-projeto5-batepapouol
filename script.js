@@ -2,7 +2,7 @@
 let username;
 let typed_username;
 let visibility_mode = 'Público';
-let recipient_user_index = 0;
+let recipient_user = undefined;
 let messages_array;
 let participants_array = ['Todos'];
 const participants_url = 'https://mock-api.driven.com.br/api/v6/uol/participants ';
@@ -17,6 +17,7 @@ let refresh_participants_time_interval;
 let DOM_entry_screen = document.querySelector('.entry_screen');
 let DOM_username_input = document.querySelector('.entry_screen input');
 let DOM_invalid_user_name_popup = document.querySelector('.invalid_username_popup');
+let DOM_invalid_message_popup = document.querySelector('.invalid_message_popup');
 let DOM_loading_screen = document.querySelector('.loading_screen');
 let DOM_page_content = document.querySelector('.page_content');
 let DOM_top_menu = document.querySelector('.top_menu');
@@ -50,7 +51,7 @@ function SERVER_process_username_answer(answer) {
 }
 function SERVER_process_username_error(error){
     if (error.response.status == 400){
-        DOM_invalid_user_name_popup.style.opacity = 0.6;
+        DOM_invalid_user_name_popup.style.opacity = 0.8;
         DOM_invalid_user_name_popup.innerHTML = "Nome já está em uso! Digite outro";
         setTimeout(function(){ DOM_invalid_user_name_popup.style.opacity = 0;
                                DOM_invalid_user_name_popup.innerHTML = ""; }, 2000);
@@ -92,7 +93,6 @@ function start_ping_server_interval(){
                                               name: username,
                                             }
                                         });
-                                        console.log('ping');
                                      }, 5000);
 }
 
@@ -125,11 +125,9 @@ function change_user(i){
         DOM_user_options[j].querySelector('.option_content').innerHTML = `<p>${participants_array[j]}</p>`;
     }
 
-    if (participants_array[i] != username){
-        DOM_user_options[i].querySelector('.option_content').innerHTML += `<ion-icon name="checkmark-sharp"></ion-icon>`;
-        recipient_user_index = i;
-    }
-    console.log('recipient_user = ', participants_array[recipient_user_index]);
+    DOM_user_options[i].querySelector('.option_content').innerHTML += `<ion-icon name="checkmark-sharp"></ion-icon>`;
+    recipient_user = participants_array[i];
+    console.log('recipient_user = ', recipient_user);
 }
 
 
@@ -148,7 +146,6 @@ function scroll_last_message_into_view(){
 
 
 function fill_chat(){
-    console.log('fill_chat()');
     let message_div;
     DOM_message_container.innerHTML = '';
     for (let i = 0; i < messages_array.length; i++) {
@@ -188,8 +185,6 @@ function fill_chat(){
             }
         }
         else{
-            console.log('message_type');
-            console.log(message_type);
             throw new Error('Invalid message type!');
         }
     }
@@ -203,7 +198,6 @@ function SERVER_process_fetch_messages_answer(answer) {
 }
 function fetch_messages_from_server(){
     const SERVER_fetch_messages_promise = axios.get(messages_url);
-    console.log('SERVER_fetch_messages_promise', SERVER_fetch_messages_promise);
     SERVER_fetch_messages_promise.then(SERVER_process_fetch_messages_answer);
 }
 
@@ -213,7 +207,6 @@ function fetch_messages_from_server(){
 function start_chat_refresh_interval(){
     refresh_chat_time_interval = setInterval(function () {
                                     fetch_messages_from_server();
-                                    console.log('refresh_chat');
                                 }, 3000);
 }
 
@@ -226,7 +219,6 @@ function start_chat_refresh_interval(){
 
 function SERVER_process_message_sent_answer(answer){
     if(answer.status == 200){
-        console.log('Message Sent successfully!')
         fetch_messages_from_server();
     }
     else{
@@ -234,18 +226,40 @@ function SERVER_process_message_sent_answer(answer){
     }
 }
 function SERVER_process_message_sent_error(error){
-    console.log('Error: Message was not sent successfully')
-    console.log(error);
     window.location.reload();
 }
+
 function send_message(){
-    const message_content = DOM_message_input.value;
+    let message_content = DOM_message_input.value;
     let message_to;
     let message_type;
     DOM_message_input.value = '';
 
-    if(typed_username.trim().length != 0 && String(typed_username)){
-        message_to = participants_array[recipient_user_index];
+    if(message_content.trim().length != 0 && String(message_content)){
+
+
+        if (recipient_user != undefined){
+            let recipient_user_index = participants_array.indexOf(recipient_user);
+            if (recipient_user_index != -1){
+                message_to = participants_array[recipient_user_index];
+            }
+            else{
+                show_invalid_message_popup('Destinatário ausente do chat!');
+                return;
+            }
+        }
+        else{
+            console.log('Escolha um destinatário primeiro!');
+            show_invalid_message_popup('Escolha um destinatário primeiro!');
+            return;
+        }
+        
+        if(message_to == username){
+            console.log('Não é possível enviar mensagens para próprio usuário!');
+            show_invalid_message_popup('Não é possível enviar mensagens para próprio usuário!');
+            return;
+        }
+
         if (visibility_mode=='Público'){
             message_type = 'message'
         }
@@ -265,27 +279,27 @@ function send_message(){
         SERVER_message_sent_promise.then(SERVER_process_message_sent_answer)
                                    .catch(SERVER_process_message_sent_error);
     }
+    else{
+        show_invalid_message_popup('Mensagem inválida!');
+        return;
+    }
 }
 
 
 
 
 function SERVER_process_fetch_participants_answer(answer){
-    console.log('answer = ', answer);
     const data = answer.data;
     participants_array = ['Todos'];
     for (let i = 0; i < data.length; i++) {
         participants_array.push(data[i].name);
     }
-    console.log('participants_array = ', participants_array);
     fill_side_menu_with_participants();
 }
 function fetch_participants_from_server(){
     const SERVER_fetch_participants_promise = axios.get(participants_url);
     SERVER_fetch_participants_promise.then(SERVER_process_fetch_participants_answer)
                                      .catch(function (error){
-                                        console.log(error);
-                                        console.log('Could not get participants from server!');
                                         throw new Error('Could not get participants from server!');
                                      });
 }
@@ -293,8 +307,6 @@ function fetch_participants_from_server(){
 function start_participants_refresh_interval(){
     refresh_participants_time_interval = setInterval(function () {
                                                         fetch_participants_from_server();
-                                                        console.log('refresh_participants');
-                                                        console.log(participants_array);
                                                     }, 10000);
 }
 
@@ -312,7 +324,27 @@ function fill_side_menu_with_participants(){
         DOM_user_menu.innerHTML += participant_div;
     }
     const DOM_user_options = DOM_user_menu.querySelectorAll('.option');
-    DOM_user_options[recipient_user_index].querySelector('.option_content').innerHTML += `<ion-icon name="checkmark-sharp"></ion-icon>`;
+    if (recipient_user != undefined){
+        let recipient_user_index = participants_array.indexOf(recipient_user);
+        if (recipient_user_index != -1){
+            DOM_user_options[recipient_user_index].querySelector('.option_content').innerHTML += `<ion-icon name="checkmark-sharp"></ion-icon>`;
+        }
+        else{
+            console.log('Recipient user left chat!')
+            recipient_user = undefined;
+        }
+        
+    }
+    
+}
+
+
+function show_invalid_message_popup(message_string){
+    console.log('show_invalid_message_popup()');
+    DOM_invalid_message_popup.style.opacity = 0.8;
+    DOM_invalid_message_popup.innerHTML = message_string;
+    setTimeout(function(){ DOM_invalid_message_popup.style.opacity = 0;
+                           DOM_invalid_message_popup.innerHTML = ""; }, 2000);
 }
 
 
