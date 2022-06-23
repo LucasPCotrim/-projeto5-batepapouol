@@ -27,7 +27,8 @@ let DOM_shaded_screen = document.querySelector('.shaded_screen');
 let DOM_visibility_menu = document.querySelector('.visibility_menu');
 let DOM_user_menu = document.querySelector('.user_menu');
 let DOM_bottom_menu = document.querySelector('.bottom_menu');
-let DOM_message_input = document.querySelector('.bottom_menu input');
+let DOM_message_input = document.querySelector('.bottom_menu textarea');
+let DOM_message_input_placeholder = document.querySelector('.bottom_menu .placeholder')
 
 
 // -------------------------------- Functions --------------------------------
@@ -116,10 +117,34 @@ function change_visibility(i) {
     }
     DOM_visibility_options[i].querySelector('.option_content').innerHTML += `<ion-icon name="checkmark-sharp"></ion-icon>`;
     visibility_mode = visibility_options[i];
+
+    if (recipient_user != undefined){
+        if (visibility_mode == 'Público'){
+            DOM_message_input_placeholder.innerHTML = `
+                                                        Escreva Aqui...
+                                                            <div>
+                                                                Enviando para ${recipient_user}
+                                                            </div>
+                                                      `;
+        }
+        else{
+            DOM_message_input_placeholder.innerHTML = `
+                                                        Escreva Aqui...
+                                                            <div>
+                                                                Enviando para ${recipient_user} (reservadamente)
+                                                            </div>
+                                                      `;
+        }
+    }
+    else{
+        DOM_message_input_placeholder.innerHTML = `
+                                                    Escreva Aqui...
+                                                  `;
+    }
 }
 
 
-function change_user(i){
+function change_recipient(i){
     const DOM_user_options = DOM_user_menu.querySelectorAll('.option');
     for (let j = 0; j < DOM_user_options.length; j++) {
         DOM_user_options[j].querySelector('.option_content').innerHTML = `<p>${participants_array[j]}</p>`;
@@ -128,6 +153,24 @@ function change_user(i){
     DOM_user_options[i].querySelector('.option_content').innerHTML += `<ion-icon name="checkmark-sharp"></ion-icon>`;
     recipient_user = participants_array[i];
     console.log('recipient_user = ', recipient_user);
+
+    if (visibility_mode == 'Público'){
+        DOM_message_input_placeholder.innerHTML = `
+                                                        Escreva Aqui...
+                                                            <div>
+                                                                Enviando para ${recipient_user}
+                                                            </div>
+                                                      `;
+    }
+    else{
+        DOM_message_input_placeholder.innerHTML = `
+                                                        Escreva Aqui...
+                                                            <div>
+                                                                Enviando para ${recipient_user} (reservadamente)
+                                                            </div>
+                                                      `;
+    }
+    
 }
 
 
@@ -237,7 +280,6 @@ function send_message(){
 
     if(message_content.trim().length != 0 && String(message_content)){
 
-
         if (recipient_user != undefined){
             let recipient_user_index = participants_array.indexOf(recipient_user);
             if (recipient_user_index != -1){
@@ -245,6 +287,9 @@ function send_message(){
             }
             else{
                 show_invalid_message_popup('Destinatário ausente do chat!');
+                DOM_message_input_placeholder.innerHTML = `
+                                                            Escreva Aqui...
+                                                          `;
                 return;
             }
         }
@@ -315,7 +360,7 @@ function start_participants_refresh_interval(){
 function fill_side_menu_with_participants(){
     DOM_user_menu.innerHTML = '';
     for (let i = 0; i < participants_array.length; i++) {
-        const participant_div = `<div class="option" onclick="change_user(${i})" data-identifier="participant">
+        const participant_div = `<div class="option" onclick="change_recipient(${i})" data-identifier="participant">
                                     <ion-icon name="person-circle"></ion-icon>
                                     <div class="option_content">
                                         ${participants_array[i]}
@@ -349,3 +394,4 @@ function show_invalid_message_popup(message_string){
 
 
 // -------------------------------- Main --------------------------------
+console.log('Script.js')
