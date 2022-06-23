@@ -37,38 +37,18 @@ let DOM_message_input_placeholder = document.querySelector('.bottom_menu .placeh
 
 
 // -------------------------------- Functions --------------------------------
-function SERVER_process_username_answer(answer) {
 
-    if(answer.status == 200){
-        username = typed_username;
-        start_ping_server_interval();
-        fetch_messages_from_server();
-        fetch_participants_from_server();
-        start_chat_refresh_interval();
-        start_participants_refresh_interval();
-        DOM_message_input.addEventListener("keyup", ({key}) => {
-                                                        if (key === "Enter") {
-                                                            send_message();
-                                                        }
-                                                    });
-        DOM_entry_screen.classList.toggle('hidden');
-        DOM_loading_screen.classList.toggle('hidden');
-        setTimeout(function(){ DOM_loading_screen.classList.toggle('hidden');
-                               DOM_page_content.classList.toggle('hidden');}, 2000);
-    }
-    else{
-        return;
-    }
-}
-function SERVER_process_username_error(error){
-    if (error.response.status == 400){
-        DOM_invalid_user_name_popup.style.opacity = 0.8;
-        DOM_invalid_user_name_popup.innerHTML = "Nome já está em uso! Digite outro";
-        setTimeout(function(){ DOM_invalid_user_name_popup.style.opacity = 0;
-                               DOM_invalid_user_name_popup.innerHTML = ""; }, 2000);
-    }
-}
+//----------------------------------------------------------------------------------------
+// Function: log_in()
+// Description: Function called to log in user after username is typed.
+//              Treats errors in case username is invalid.
+//
+// Inputs: none
+//
+// Outputs: none;
+//----------------------------------------------------------------------------------------
 function log_in(){
+
     typed_username = DOM_username_input.value;
     DOM_username_input.value = '';
     
@@ -92,10 +72,84 @@ function log_in(){
         SERVER_user_name_sent_promise.then(SERVER_process_username_answer)
                                      .catch(SERVER_process_username_error);
     }
-
 }
 
+//----------------------------------------------------------------------------------------
+// Function: set_up_chat()
+// Description: Sets up time intervals and fetches messages and participants when entering chat
+//
+// Inputs: none
+//
+// Outputs: none;
+//----------------------------------------------------------------------------------------
+function set_up_chat(){
+    start_ping_server_interval();
+    fetch_messages_from_server();
+    fetch_participants_from_server();
+    start_chat_refresh_interval();
+    start_participants_refresh_interval();
+}
+
+//----------------------------------------------------------------------------------------
+// Function: SERVER_process_username_answer(answer)
+// Description: Treats answer received by 'participants_url' API (then function).
+//
+// Inputs:
+// - answer: Answer received by 'participants_url' API
+//
+// Outputs: none;
+//----------------------------------------------------------------------------------------
+function SERVER_process_username_answer(answer) {
+
+    // Status == OK
+    if(answer.status == 200){
+        username = typed_username;
+        set_up_chat();
+        DOM_message_input.addEventListener("keyup", ({key}) => {
+                                                        if (key === "Enter") {
+                                                            send_message();
+                                                        }
+                                                    });
+        DOM_entry_screen.classList.toggle('hidden');
+        DOM_loading_screen.classList.toggle('hidden');
+        setTimeout(function(){ DOM_loading_screen.classList.toggle('hidden');
+                               DOM_page_content.classList.toggle('hidden');}, 2000);
+    }
+    // Else (do nothing)
+    else{
+        return;
+    }
+}
+
+//----------------------------------------------------------------------------------------
+// Function: SERVER_process_username_error(error)
+// Description: Treats error received by 'participants_url' API (catch function).
+//
+// Inputs:
+// - error: Error received by 'participants_url' API
+//
+// Outputs: none;
+//----------------------------------------------------------------------------------------
+function SERVER_process_username_error(error){
+    
+    if (error.response.status == 400){
+        DOM_invalid_user_name_popup.style.opacity = 0.8;
+        DOM_invalid_user_name_popup.innerHTML = "Nome já está em uso! Digite outro";
+        setTimeout(function(){ DOM_invalid_user_name_popup.style.opacity = 0;
+                               DOM_invalid_user_name_popup.innerHTML = ""; }, 2000);
+    }
+}
+
+//----------------------------------------------------------------------------------------
+// Function: start_ping_server_interval()
+// Description: Starts the time interval to ping 'status_url' server every 5s.
+//
+// Inputs: none
+//
+// Outputs: none;
+//----------------------------------------------------------------------------------------
 function start_ping_server_interval(){
+
     ping_time_interval = setInterval(function () {
                                         axios({
                                             method: 'post',
@@ -108,8 +162,17 @@ function start_ping_server_interval(){
                                      }, 5000);
 }
 
-
+//----------------------------------------------------------------------------------------
+// Function: move_side_menu(mode)
+// Description: Moves the side menu when user clicks icon or shaded area
+//
+// Inputs:
+// - mode: 'show' displays the side menu and 'hide' move it outside of view
+//
+// Outputs: none;
+//----------------------------------------------------------------------------------------
 function move_side_menu(mode) {
+
     if (mode == 'show'){
         DOM_side_menu.style.right = 0;
     }
@@ -117,15 +180,27 @@ function move_side_menu(mode) {
         DOM_side_menu.style.right = "-259px";
         
     }
+
     DOM_shaded_screen.classList.toggle('hidden');
 }
 
-
+//----------------------------------------------------------------------------------------
+// Function: change_visibility(i)
+// Description: Changes the visibility option according to which option was clicked by the user
+//
+// Inputs:
+// - i: Index of chosen visibility option.
+//
+// Outputs: none;
+//----------------------------------------------------------------------------------------
 function change_visibility(i) {
+
     const DOM_visibility_options = DOM_visibility_menu.querySelectorAll('.option');
+
     for (let j = 0; j < DOM_visibility_options.length; j++) {
         DOM_visibility_options[j].querySelector('.option_content').innerHTML = `<p>${visibility_options[j]}</p>`;
     }
+
     DOM_visibility_options[i].querySelector('.option_content').innerHTML += `<ion-icon name="checkmark-sharp"></ion-icon>`;
     visibility_mode = visibility_options[i];
 
@@ -154,9 +229,19 @@ function change_visibility(i) {
     }
 }
 
-
+//----------------------------------------------------------------------------------------
+// Function: change_recipient(i)
+// Description: Changes the recipient according to the one clicked by the user in the side menu.
+//
+// Inputs:
+// - i: Index of chosen recipient.
+//
+// Outputs: none;
+//----------------------------------------------------------------------------------------
 function change_recipient(i){
+
     const DOM_user_options = DOM_user_menu.querySelectorAll('.option');
+
     for (let j = 0; j < DOM_user_options.length; j++) {
         DOM_user_options[j].querySelector('.option_content').innerHTML = `<p>${participants_array[j]}</p>`;
     }
@@ -183,24 +268,35 @@ function change_recipient(i){
     
 }
 
-
-
-
-
+//----------------------------------------------------------------------------------------
+// Function: scroll_last_message_into_view()
+// Description: Scrolls into view the last message in chat.
+//
+// Inputs: none
+//
+// Outputs: none;
+//----------------------------------------------------------------------------------------
 function scroll_last_message_into_view(){
+
     const messages = DOM_message_container.querySelectorAll('.message');
     const last_message = messages[messages.length - 1];
+
     last_message.scrollIntoView();
-    // scrollIntoView() not working without the Timeout
-    // setTimeout(function(){
-    //     last_message.scrollIntoView();
-    // }, 2000);
 }
 
-
+//----------------------------------------------------------------------------------------
+// Function: fill_chat()
+// Description: Fills chat with retrieved messages stored in 'messages_array' variable.
+//
+// Inputs: none
+//
+// Outputs: none;
+//----------------------------------------------------------------------------------------
 function fill_chat(){
+
     let message_div;
     DOM_message_container.innerHTML = '';
+
     for (let i = 0; i < messages_array.length; i++) {
         const message_type = messages_array[i].type;
         const message_time = messages_array[i].time;
@@ -241,49 +337,65 @@ function fill_chat(){
             throw new Error('Invalid message type!');
         }
     }
+
     scroll_last_message_into_view();
 }
 
-
-function SERVER_process_fetch_messages_answer(answer) {
-    messages_array = answer.data;
-    fill_chat();
-}
+//----------------------------------------------------------------------------------------
+// Function: fetch_messages_from_server()
+// Description: Gets all messages from 'messages_url' API
+//
+// Inputs: none
+//
+// Outputs: none;
+//----------------------------------------------------------------------------------------
 function fetch_messages_from_server(){
+
     const SERVER_fetch_messages_promise = axios.get(messages_url);
     SERVER_fetch_messages_promise.then(SERVER_process_fetch_messages_answer);
 }
 
+//----------------------------------------------------------------------------------------
+// Function: SERVER_process_fetch_messages_answer(answer)
+// Description: Treats success when trying to fetch messages from server (then function).
+//              Fills chat with retrieved messages in case of success.
+//
+// Inputs: answer: answer received by 'messages_url' API
+//
+// Outputs: none;
+//----------------------------------------------------------------------------------------
+function SERVER_process_fetch_messages_answer(answer) {
 
+    messages_array = answer.data;
+    fill_chat();
+}
 
-
+//----------------------------------------------------------------------------------------
+// Function: start_chat_refresh_interval()
+// Description: Starts the time interval to refresh chat every 3s
+//
+// Inputs: none
+//
+// Outputs: none;
+//----------------------------------------------------------------------------------------
 function start_chat_refresh_interval(){
+
     refresh_chat_time_interval = setInterval(function () {
                                     fetch_messages_from_server();
                                     console.log('fetching messages from server');
                                 }, 3000);
 }
 
-
-
-
-
-
-
-
-function SERVER_process_message_sent_answer(answer){
-    if(answer.status == 200){
-        fetch_messages_from_server();
-    }
-    else{
-        return;
-    }
-}
-function SERVER_process_message_sent_error(error){
-    window.location.reload();
-}
-
+//----------------------------------------------------------------------------------------
+// Function: send_message()
+// Description: Sends a message written by user in 'DOM_message_input'
+//
+// Inputs: none
+//
+// Outputs: none;
+//----------------------------------------------------------------------------------------
 function send_message(){
+
     let message_content = DOM_message_input.value;
     let message_to;
     let message_type;
@@ -343,18 +455,49 @@ function send_message(){
     }
 }
 
+//----------------------------------------------------------------------------------------
+// Function: SERVER_process_message_sent_answer(answer)
+// Description: Treats success when trying to send message to server (then function).
+//              Fetches messages from server in case of success (answer.status == 200)
+//
+// Inputs: answer: answer received by 'messages_url' API
+//
+// Outputs: none;
+//----------------------------------------------------------------------------------------
+function SERVER_process_message_sent_answer(answer){
 
-
-
-function SERVER_process_fetch_participants_answer(answer){
-    const data = answer.data;
-    participants_array = ['Todos'];
-    for (let i = 0; i < data.length; i++) {
-        participants_array.push(data[i].name);
+    if(answer.status == 200){
+        fetch_messages_from_server();
     }
-    fill_side_menu_with_participants();
+    else{
+        return;
+    }
 }
+
+//----------------------------------------------------------------------------------------
+// Function: SERVER_process_message_sent_error(error)
+// Description: Treats error when trying to send message to server (catch function).
+//              Resets application in case of error.
+//
+// Inputs: error: error received by 'messages_url' API
+//
+// Outputs: none;
+//----------------------------------------------------------------------------------------
+function SERVER_process_message_sent_error(error){
+
+    window.location.reload();
+}
+
+//----------------------------------------------------------------------------------------
+// Function: fetch_participants_from_server()
+// Description: Gets active participants from API 'participants_url' and treats error
+//
+// Inputs: none
+//
+// Outputs: none;
+//----------------------------------------------------------------------------------------
 function fetch_participants_from_server(){
+
     const SERVER_fetch_participants_promise = axios.get(participants_url);
     SERVER_fetch_participants_promise.then(SERVER_process_fetch_participants_answer)
                                      .catch(function (error){
@@ -362,17 +505,53 @@ function fetch_participants_from_server(){
                                      });
 }
 
+//----------------------------------------------------------------------------------------
+// Function: SERVER_process_fetch_participants_answer(answer)
+// Description: Gets active participants from API 'participants_url' (success case (then function))
+//
+// Inputs:
+//  - answer: Answer returned by server
+//
+// Outputs: none;
+//----------------------------------------------------------------------------------------
+function SERVER_process_fetch_participants_answer(answer){
+
+    const data = answer.data;
+    participants_array = ['Todos'];
+    for (let i = 0; i < data.length; i++) {
+        participants_array.push(data[i].name);
+    }
+    fill_side_menu_with_participants();
+}
+
+//----------------------------------------------------------------------------------------
+// Function: start_participants_refresh_interval()
+// Description: Starts the time interval to refresh active participants every 10s
+//
+// Inputs: none
+//
+// Outputs: none;
+//----------------------------------------------------------------------------------------
 function start_participants_refresh_interval(){
+
     refresh_participants_time_interval = setInterval(function () {
                                                         fetch_participants_from_server();
                                                         console.log('fetching participants from server');
                                                     }, 10000);
 }
 
-
-
+//----------------------------------------------------------------------------------------
+// Function: fill_side_menu_with_participants()
+// Description: Fills side menu with active participants
+//
+// Inputs: none
+//
+// Outputs: none;
+//----------------------------------------------------------------------------------------
 function fill_side_menu_with_participants(){
+
     DOM_user_menu.innerHTML = '';
+
     for (let i = 0; i < participants_array.length; i++) {
         const participant_div = `<div class="option" onclick="change_recipient(${i})" data-identifier="participant">
                                     <ion-icon name="person-circle"></ion-icon>
@@ -382,7 +561,9 @@ function fill_side_menu_with_participants(){
                                 </div>`;
         DOM_user_menu.innerHTML += participant_div;
     }
+
     const DOM_user_options = DOM_user_menu.querySelectorAll('.option');
+
     if (recipient_user != undefined){
         let recipient_user_index = participants_array.indexOf(recipient_user);
         if (recipient_user_index != -1){
@@ -390,23 +571,46 @@ function fill_side_menu_with_participants(){
         }
         else{
             recipient_user = undefined;
+            show_invalid_message_popup('Destinatário anterior ausente, favor escolher outro!');
+            DOM_message_input_placeholder.innerHTML = `
+                                                        Escreva Aqui...
+                                                      `;
         }
-        
     }
-    
 }
 
-
+//----------------------------------------------------------------------------------------
+// Function: show_invalid_message_popup(message_string)
+// Description: Shows a opop up error message when user tries to send a message
+//              Possible errors:
+//                  - 'Mensagem inválida!'
+//                  - 'Não é possível enviar uma mensagem privada para todos!'
+//                  - 'Não é possível enviar mensagens para próprio usuário!'
+//                  - 'Escolha um destinatário primeiro!'
+//                  - 'Destinatário ausente do chat!'
+//                  - 'Destinatário anterior ausente, favor escolher outro!'
+//
+// Inputs:
+//  - message_string: String containing pop up error message to be shown
+//
+// Outputs: none;
+//----------------------------------------------------------------------------------------
 function show_invalid_message_popup(message_string){
+
     DOM_invalid_message_popup.style.opacity = 0.8;
     DOM_invalid_message_popup.innerHTML = message_string;
     setTimeout(function(){ DOM_invalid_message_popup.style.opacity = 0;
                            DOM_invalid_message_popup.innerHTML = ""; }, 2000);
 }
 
-
-
-
+//----------------------------------------------------------------------------------------
+// Function: initialize_application()
+// Description: Initializes global state variables and login enter EventListener
+//
+// Inputs: none
+//
+// Outputs: none;
+//----------------------------------------------------------------------------------------
 function initialize_application(){
 
     // Set global variables
@@ -428,8 +632,8 @@ function initialize_application(){
 
 
 
-// -------------------------------- Main --------------------------------
 
+// -------------------------------- Main --------------------------------
 initialize_application();
 
 

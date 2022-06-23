@@ -10,16 +10,17 @@
 </head>
 <body>
 
-    
+    <!-- START entry_screen -->
     <div class="entry_screen">
         <img src="imgs/logo.png" alt="UOL Logo">
         <input type="text" id="user_name" name="user_name" placeholder="Digite seu nome">
         <button onclick="log_in()">Entrar</button>
         <div class="invalid_username_popup"></div>
     </div>
+    <!-- END entry_screen -->
     
 
-
+    <!-- START loading_screen -->
     <div class="loading_screen hidden">
         <img src="imgs/logo.png" alt="UOL Logo">
         <div class="loader">
@@ -36,16 +37,25 @@
         </div>
         <div class="status">Entrando...</div>
     </div>
+    <!-- END loading_screen -->
 
-
+    <!-- START page_content -->
     <div class="page_content hidden">
+        
+        <!-- START top_menu -->
         <div class="top_menu">
-            <img src="imgs/logo.png" alt="UOL Logo">
+            <img src="imgs/logo.png" onclick="window.location.reload()" alt="UOL Logo">
             <ion-icon onclick="move_side_menu('show')" name="people"></ion-icon>
         </div>
+        <!-- END top_menu -->
+
+        <!-- START message_container -->
         <div class="message_container">
             <!-- Filled by fill_chat() function -->
         </div>
+        <!-- END message_container -->
+
+        <!-- START bottom_menu -->
         <div class="bottom_menu">
             <textarea id="w3review" name="w3review" rows="4" cols="50" placeholder="" required="required"></textarea>
             <div class="placeholder">
@@ -53,8 +63,10 @@
             </div>
             <ion-icon onclick="send_message()" name="paper-plane"></ion-icon>
         </div>
+        <!-- END bottom_menu -->
         <div class="invalid_message_popup"></div>
 
+        <!-- START side_menu -->
         <div class="side_menu">
             <div class="section_title">Escolha um contato para enviar mensagem:</div>
             <div class="user_menu">
@@ -77,11 +89,13 @@
                 </div>
             </div>
         </div>
+        <!-- END side_menu -->
         <div onclick="move_side_menu('hide')" class="shaded_screen hidden"></div>
     </div>
+    <!-- END page_content -->
     
 
-
+    <!-- Javascript files -->
     <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
