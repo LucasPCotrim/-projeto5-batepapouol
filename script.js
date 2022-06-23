@@ -1,19 +1,24 @@
 // -------------------------------- Global Variables --------------------------------
-let username;
-let typed_username;
-let visibility_mode = 'Público';
-let recipient_user = undefined;
-let messages_array;
-let participants_array = ['Todos'];
+
+
+// API URLs
 const participants_url = 'https://mock-api.driven.com.br/api/v6/uol/participants ';
 const status_url = 'https://mock-api.driven.com.br/api/v6/uol/status';
 const messages_url = 'https://mock-api.driven.com.br/api/v6/uol/messages/';
-const visibility_options = ['Público', 'Reservadamente'];
+
+// State variables
+let username;
+let typed_username;
+let visibility_mode;
+let recipient_user;
+let messages_array;
+let participants_array;
+let visibility_options;
 let ping_time_interval;
 let refresh_chat_time_interval;
 let refresh_participants_time_interval;
 
-
+// DOM elements
 let DOM_entry_screen = document.querySelector('.entry_screen');
 let DOM_username_input = document.querySelector('.entry_screen input');
 let DOM_invalid_user_name_popup = document.querySelector('.invalid_username_popup');
@@ -28,7 +33,7 @@ let DOM_visibility_menu = document.querySelector('.visibility_menu');
 let DOM_user_menu = document.querySelector('.user_menu');
 let DOM_bottom_menu = document.querySelector('.bottom_menu');
 let DOM_message_input = document.querySelector('.bottom_menu textarea');
-let DOM_message_input_placeholder = document.querySelector('.bottom_menu .placeholder')
+let DOM_message_input_placeholder = document.querySelector('.bottom_menu .placeholder');
 
 
 // -------------------------------- Functions --------------------------------
@@ -41,6 +46,11 @@ function SERVER_process_username_answer(answer) {
         fetch_participants_from_server();
         start_chat_refresh_interval();
         start_participants_refresh_interval();
+        DOM_message_input.addEventListener("keyup", ({key}) => {
+                                                        if (key === "Enter") {
+                                                            send_message();
+                                                        }
+                                                    });
         DOM_entry_screen.classList.toggle('hidden');
         DOM_loading_screen.classList.toggle('hidden');
         setTimeout(function(){ DOM_loading_screen.classList.toggle('hidden');
@@ -94,6 +104,7 @@ function start_ping_server_interval(){
                                               name: username,
                                             }
                                         });
+                                        console.log('ping');
                                      }, 5000);
 }
 
@@ -152,7 +163,6 @@ function change_recipient(i){
 
     DOM_user_options[i].querySelector('.option_content').innerHTML += `<ion-icon name="checkmark-sharp"></ion-icon>`;
     recipient_user = participants_array[i];
-    console.log('recipient_user = ', recipient_user);
 
     if (visibility_mode == 'Público'){
         DOM_message_input_placeholder.innerHTML = `
@@ -250,6 +260,7 @@ function fetch_messages_from_server(){
 function start_chat_refresh_interval(){
     refresh_chat_time_interval = setInterval(function () {
                                     fetch_messages_from_server();
+                                    console.log('fetching messages from server');
                                 }, 3000);
 }
 
@@ -294,13 +305,11 @@ function send_message(){
             }
         }
         else{
-            console.log('Escolha um destinatário primeiro!');
             show_invalid_message_popup('Escolha um destinatário primeiro!');
             return;
         }
         
         if(message_to == username){
-            console.log('Não é possível enviar mensagens para próprio usuário!');
             show_invalid_message_popup('Não é possível enviar mensagens para próprio usuário!');
             return;
         }
@@ -310,6 +319,10 @@ function send_message(){
         }
         else{
             message_type = 'private_message';
+            if(message_to == 'Todos'){
+                show_invalid_message_popup('Não é possível enviar uma mensagem privada para todos!');
+                return;
+            }
         }
         const SERVER_message_sent_promise = axios({
                                                 method: 'post',
@@ -352,6 +365,7 @@ function fetch_participants_from_server(){
 function start_participants_refresh_interval(){
     refresh_participants_time_interval = setInterval(function () {
                                                         fetch_participants_from_server();
+                                                        console.log('fetching participants from server');
                                                     }, 10000);
 }
 
@@ -375,7 +389,6 @@ function fill_side_menu_with_participants(){
             DOM_user_options[recipient_user_index].querySelector('.option_content').innerHTML += `<ion-icon name="checkmark-sharp"></ion-icon>`;
         }
         else{
-            console.log('Recipient user left chat!')
             recipient_user = undefined;
         }
         
@@ -385,7 +398,6 @@ function fill_side_menu_with_participants(){
 
 
 function show_invalid_message_popup(message_string){
-    console.log('show_invalid_message_popup()');
     DOM_invalid_message_popup.style.opacity = 0.8;
     DOM_invalid_message_popup.innerHTML = message_string;
     setTimeout(function(){ DOM_invalid_message_popup.style.opacity = 0;
@@ -393,5 +405,31 @@ function show_invalid_message_popup(message_string){
 }
 
 
+
+
+function initialize_application(){
+
+    // Set global variables
+    visibility_mode = 'Público';
+    recipient_user = undefined;
+    participants_array = ['Todos'];
+    visibility_options = ['Público', 'Reservadamente']
+
+
+
+    // Add EventListener to let user log in with 'enter' key
+    DOM_entry_screen.addEventListener("keyup", ({key}) => {
+        if (key === "Enter") {
+            log_in();
+        }
+    });
+}
+
+
+
+
 // -------------------------------- Main --------------------------------
-console.log('Script.js')
+
+initialize_application();
+
+
