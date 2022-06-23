@@ -362,6 +362,8 @@
     align-items: flex-start;
     justify-content: flex-start;
     width: 226px;
+    max-height: 300px;
+    overflow-y: auto;
 }
 .user_menu .option, .visibility_menu .option{
     display: flex;
